@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khan Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: 'Graphik', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .dropdown:hover .dropdown-menu { display: block; }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            <img src="https://www.khanacademy.org/images/khan-logo.svg" alt="Khan Academy Logo" class="h-8">
+            <nav class="flex space-x-4">
+                <div class="relative dropdown">
+                    <button class="text-gray-700 hover:text-gray-900">Courses</button>
+                    <div class="dropdown-menu hidden absolute bg-white shadow-lg rounded-md mt-2">
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Math</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Science</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Computing</a>
+                    </div>
+                </div>
+                <a href="#" class="text-gray-700 hover:text-gray-900">For Teachers</a>
+                <a href="#" class="text-gray-700 hover:text-gray-900">For Parents</a>
+                <button class="bg-[#14BF96] text-white px-4 py-2 rounded-md hover:bg-[#0f9b7a]">Sign Up</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-[#F5F6F5] py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Learn anything, for free.</h1>
+            <p class="text-lg text-gray-600 mb-8">Explore thousands of courses and resources to master any subject.</p>
+            <button class="bg-[#14BF96] text-white px-6 py-3 rounded-md text-lg hover:bg-[#0f9b7a]">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Learning Path Generator -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Create Your Learning Path</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Your Interests</label>
+                    <select id="interests" class="w-full p-2 border rounded-md">
+                        <option value="math">Math</option>
+                        <option value="science">Science</option>
+                        <option value="computing">Computing</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2">Learning Goal</label>
+                    <input id="goal" type="text" class="w-full p-2 border rounded-md" placeholder="e.g., Master Algebra">
+                </div>
+                <button onclick="generatePath()" class="bg-[#14BF96] text-white px-4 py-2 rounded-md w-full hover:bg-[#0f9b7a]">Generate Path</button>
+                <div id="path-result" class="mt-4"></div>
+                <button id="download-btn" class="hidden bg-gray-700 text-white px-4 py-2 rounded-md mt-4 w-full hover:bg-gray-800">Download Path as PDF</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Khan Academy</h3>
+                    <p>Free education for everyone, everywhere.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Links</h3>
+                    <a href="#" class="block text-gray-400 hover:text-white">About</a>
+                    <a href="#" class="block text-gray-400 hover:text-white">Contact</a>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <a href="#" class="block text-gray-400 hover:text-white">Twitter</a>
+                    <a href="#" class="block text-gray-400 hover:text-white">Facebook</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function generatePath() {
+            const interests = document.getElementById('interests').value;
+            const goal = document.getElementById('goal').value || 'General Learning';
+            const courses = {
+                math: ['Algebra Basics', 'Geometry', 'Calculus'],
+                science: ['Biology', 'Physics', 'Chemistry'],
+                computing: ['Intro to Programming', 'Web Development', 'Data Science']
+            };
+            const path = {
+                goal,
+                courses: courses[interests] || [],
+                progress: 0
+            };
+            localStorage.setItem('learningPath', JSON.stringify(path));
+            displayPath(path);
+        }
+
+        function displayPath(path) {
+            const resultDiv = document.getElementById('path-result');
+            resultDiv.innerHTML = `
+                <h3 class="text-xl font-semibold mb-2">Your Learning Path</h3>
+                <p><strong>Goal:</strong> ${path.goal}</p>
+                <p><strong>Courses:</strong></p>
+                <ul class="list-disc pl-5">
+                    ${path.courses.map(course => `<li>${course}</li>`).join('')}
+                </ul>
+                <p><strong>Progress:</strong> ${path.progress}%</p>
+            `;
+            document.getElementById('download-btn').classList.remove('hidden');
+            document.getElementById('download-btn').onclick = () => downloadPDF(path);
+        }
+
+        function downloadPDF(path) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text('Your Learning Path', 10, 10);
+            doc.text(`Goal: ${path.goal}`, 10, 20);
+            doc.text('Courses:', 10, 30);
+            path.courses.forEach((course, i) => doc.text(`- ${course}`, 10, 40 + i * 10));
+            doc.text(`Progress: ${path.progress}%`, 10, 40 + path.courses.length * 10);
+            doc.save('learning-path.pdf');
+        }
+
+        // Load saved path on page load
+        window.onload = () => {
+            const savedPath = JSON.parse(localStorage.getItem('learningPath'));
+            if (savedPath) displayPath(savedPath);
+        };
+    </script>
+</body>
+</html>
